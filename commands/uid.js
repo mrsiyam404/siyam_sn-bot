@@ -1,15 +1,15 @@
-const { createCanvas, loadImage, registerFont } = require("canvas");
+const { createCanvas, loadImage } = require("canvas");
 const fs = require("fs-extra");
 const path = require("path");
 const axios = require("axios");
 
 const LOCKED_AUTHOR_1 = "𝆠፝𝐒𝐈𝐘𝐀𝐌-𝐇𝐀𝐒𝐀𝐍";
 
-// বাংলা ফন্ট বা ক্যারেক্টার ক্লিন করার ফাংশন যাতে স্কয়ার বক্স না আসে
+// সেফ টেক্সট ফিল্টার যা ক্যানভাসে কোনো ফন্ট ফাইল ছাড়াই নিখুঁতভাবে কাজ করবে
 function cleanText(text) {
     if (!text) return "TELEGRAM USER";
-    // বাংলা এবং ইংরেজি বর্ণ ঠিক রেখে বাকি অদ্ভুত ইমোজি বা আনসাপোর্টেড ক্যারেক্টার ফিল্টার করা
-    return text.replace(/[^\w\s\u0980-\u09FF]/gi, '').trim() || "TELEGRAM USER";
+    const cleaned = text.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+    return cleaned || "TELEGRAM USER";
 }
 
 function drawRoundRect(ctx, x, y, width, height, radius) {
@@ -94,8 +94,7 @@ async function runDesign1(bot, msg) {
     const imgPath = path.join(cacheDir, `uid_${targetID}_${Date.now()}.png`);
 
     try {
-        // ফন্টজনিত বক্স সমস্যা এড়াতে সেফ টেক্সট ব্যবহার
-        const cleanUserName = targetName ? targetName : "TELEGRAM USER";
+        const displayName = cleanText(targetName);
         const ownerName = "SIYAM HASAN";
 
         const width = 850;
@@ -113,20 +112,12 @@ async function runDesign1(bot, msg) {
         orbCyan.addColorStop(1, "transparent");
         ctx.fillStyle = orbCyan;
         ctx.fillRect(0, 0, width, height);
-
-        const orbMagenta = ctx.createRadialGradient(720, 320, 10, 720, 320, 350);
-        orbMagenta.addColorStop(0, "rgba(255, 0, 127, 0.22)");
-        orbMagenta.addColorStop(0.5, "rgba(255, 0, 127, 0.07)");
-        orbMagenta.addColorStop(1, "transparent");
-        ctx.fillStyle = orbMagenta;
-        ctx.fillRect(0, 0, width, height);
         ctx.restore();
 
         ctx.save();
         drawRoundRect(ctx, 25, 25, width - 50, height - 50, 22);
         ctx.fillStyle = "rgba(8, 10, 18, 0.92)";
         ctx.fill();
-
         ctx.shadowColor = "#00f5d4";
         ctx.shadowBlur = 18;
         ctx.strokeStyle = "#00f5d4";
@@ -180,11 +171,10 @@ async function runDesign1(bot, msg) {
         ctx.fillStyle = "#8e9bbd";
         ctx.fillText("USER NAME", contentX, 85);
 
-        // নাম বড় হলে কেটে ছোট করা যাতে ডিজাইনের বাইরে না যায়
         ctx.font = "bold 26px sans-serif";
         ctx.fillStyle = "#ffffff";
-        const displayName = cleanUserName.length > 20 ? cleanUserName.slice(0, 20) + "..." : cleanUserName;
-        ctx.fillText(displayName, contentX, 122);
+        const shortName = displayName.length > 20 ? displayName.slice(0, 20) + "..." : displayName;
+        ctx.fillText(shortName, contentX, 122);
 
         ctx.font = "bold 15px sans-serif";
         ctx.fillStyle = "#8e9bbd";
@@ -238,6 +228,7 @@ async function runDesign2(bot, msg) {
     const filePath = path.join(cacheDir, `uid_${Date.now()}.png`);
 
     try {
+        const displayName = cleanText(targetName);
         const width = 820;
         const height = 480;
         const canvas = createCanvas(width, height);
@@ -267,7 +258,7 @@ async function runDesign2(bot, msg) {
         roundRect(ctx, 45, 40, 730, 52, 14);
         ctx.fill();
 
-        ctx.font = "bold 28px Arial";
+        ctx.font = "bold 28px sans-serif";
         ctx.fillStyle = "#ffffff";
         ctx.textAlign = "center";
         ctx.fillText("TELEGRAM UID CARD", 410, 76);
@@ -293,7 +284,7 @@ async function runDesign2(bot, msg) {
         } catch (e) {
             ctx.fillStyle = "#4a1d3a";
             ctx.fillRect(avatarX, avatarY, avatarSize, avatarSize);
-            ctx.font = "bold 42px Arial";
+            ctx.font = "bold 42px sans-serif";
             ctx.fillStyle = "#f9a8d4";
             ctx.textAlign = "center";
             ctx.fillText("?", avatarX + avatarSize / 2, avatarY + avatarSize / 2 + 16);
@@ -304,25 +295,25 @@ async function runDesign2(bot, msg) {
         roundRect(ctx, 290, 115, 480, 100, 16);
         ctx.fill();
 
-        ctx.font = "bold 15px Arial";
+        ctx.font = "bold 15px sans-serif";
         ctx.fillStyle = "#f9a8d4";
         ctx.textAlign = "left";
         ctx.fillText("USER NAME", 320, 150);
 
-        ctx.font = "bold 27px Arial";
+        ctx.font = "bold 27px sans-serif";
         ctx.fillStyle = "#ffffff";
-        const displayName = targetName.length > 20 ? targetName.slice(0, 20) + "..." : targetName;
-        ctx.fillText(displayName, 320, 190);
+        const shortName = displayName.length > 20 ? displayName.slice(0, 20) + "..." : displayName;
+        ctx.fillText(shortName, 320, 190);
 
         ctx.fillStyle = "rgba(45, 20, 50, 0.85)";
         roundRect(ctx, 290, 235, 480, 100, 16);
         ctx.fill();
 
-        ctx.font = "bold 15px Arial";
+        ctx.font = "bold 15px sans-serif";
         ctx.fillStyle = "#e9d5ff";
         ctx.fillText("USER ID", 320, 270);
 
-        ctx.font = "bold 26px Arial";
+        ctx.font = "bold 26px sans-serif";
         ctx.fillStyle = "#ffffff";
         ctx.fillText(targetID, 320, 310);
 
@@ -330,7 +321,7 @@ async function runDesign2(bot, msg) {
         roundRect(ctx, 50, 360, 720, 70, 16);
         ctx.fill();
 
-        ctx.font = "bold 26px Arial";
+        ctx.font = "bold 26px sans-serif";
         ctx.fillStyle = "#ffffff";
         ctx.textAlign = "center";
         ctx.fillText("Owner : Siyam Hasan", 410, 410);
@@ -359,7 +350,7 @@ module.exports = {
     config: {
         name: "uid",
         aliases: ["uid2", "ইউআইডি", "useid"],
-        version: "6.1",
+        version: "6.5",
         author: LOCKED_AUTHOR_1,
         role: 0,
         description: "Get user profile card with unique design",
