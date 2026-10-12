@@ -1,16 +1,15 @@
-const { createCanvas, loadImage } = require("canvas");
+const { createCanvas, loadImage, registerFont } = require("canvas");
 const fs = require("fs-extra");
 const path = require("path");
 const axios = require("axios");
 
 const LOCKED_AUTHOR_1 = "𝆠፝𝐒𝐈𝐘𝐀𝐌-𝐇𝐀𝐒𝐀𝐍";
 
+// বাংলা ফন্ট বা ক্যারেক্টার ক্লিন করার ফাংশন যাতে স্কয়ার বক্স না আসে
 function cleanText(text) {
-    if (!text) return "";
-    return text
-        .normalize("NFKC")
-        .replace(/[^\x20-\x7E\u0980-\u09FF]/g, "")
-        .trim();
+    if (!text) return "TELEGRAM USER";
+    // বাংলা এবং ইংরেজি বর্ণ ঠিক রেখে বাকি অদ্ভুত ইমোজি বা আনসাপোর্টেড ক্যারেক্টার ফিল্টার করা
+    return text.replace(/[^\w\s\u0980-\u09FF]/gi, '').trim() || "TELEGRAM USER";
 }
 
 function drawRoundRect(ctx, x, y, width, height, radius) {
@@ -58,7 +57,6 @@ function roundRect(ctx, x, y, w, h, r) {
     ctx.closePath();
 }
 
-// Telegram User Info helper
 async function getTelegramUser(bot, msg) {
     let targetID = msg.from.id;
     let targetName = msg.from.first_name + (msg.from.last_name ? ` ${msg.from.last_name}` : "");
@@ -96,8 +94,9 @@ async function runDesign1(bot, msg) {
     const imgPath = path.join(cacheDir, `uid_${targetID}_${Date.now()}.png`);
 
     try {
-        const cleanUserName = cleanText(targetName).toUpperCase() || "TELEGRAM USER";
-        const ownerName = cleanText("SIYAM HASAN");
+        // ফন্টজনিত বক্স সমস্যা এড়াতে সেফ টেক্সট ব্যবহার
+        const cleanUserName = targetName ? targetName : "TELEGRAM USER";
+        const ownerName = "SIYAM HASAN";
 
         const width = 850;
         const height = 420;
@@ -170,7 +169,7 @@ async function runDesign1(bot, msg) {
             ctx.fillStyle = "#00f5d4";
             ctx.font = "bold 70px sans-serif";
             ctx.textAlign = "center";
-            ctx.fillText(cleanUserName.charAt(0) || "U", hexX, hexY + 24);
+            ctx.fillText("U", hexX, hexY + 24);
             ctx.restore();
         }
 
@@ -181,9 +180,11 @@ async function runDesign1(bot, msg) {
         ctx.fillStyle = "#8e9bbd";
         ctx.fillText("USER NAME", contentX, 85);
 
-        ctx.font = "bold 28px sans-serif";
+        // নাম বড় হলে কেটে ছোট করা যাতে ডিজাইনের বাইরে না যায়
+        ctx.font = "bold 26px sans-serif";
         ctx.fillStyle = "#ffffff";
-        ctx.fillText(cleanUserName, contentX, 122);
+        const displayName = cleanUserName.length > 20 ? cleanUserName.slice(0, 20) + "..." : cleanUserName;
+        ctx.fillText(displayName, contentX, 122);
 
         ctx.font = "bold 15px sans-serif";
         ctx.fillStyle = "#8e9bbd";
@@ -310,7 +311,7 @@ async function runDesign2(bot, msg) {
 
         ctx.font = "bold 27px Arial";
         ctx.fillStyle = "#ffffff";
-        const displayName = targetName.length > 22 ? targetName.slice(0, 22) + "..." : targetName;
+        const displayName = targetName.length > 20 ? targetName.slice(0, 20) + "..." : targetName;
         ctx.fillText(displayName, 320, 190);
 
         ctx.fillStyle = "rgba(45, 20, 50, 0.85)";
@@ -358,7 +359,7 @@ module.exports = {
     config: {
         name: "uid",
         aliases: ["uid2", "ইউআইডি", "useid"],
-        version: "6.0",
+        version: "6.1",
         author: LOCKED_AUTHOR_1,
         role: 0,
         description: "Get user profile card with unique design",
