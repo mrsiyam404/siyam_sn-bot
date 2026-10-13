@@ -21,7 +21,7 @@ function roundRect(ctx, x, y, w, h, r) {
 module.exports = {
     name: "uptime",
     aliases: ["up", "status", "আপ"],
-    version: "6.0",
+    version: "6.5",
     author: LOCKED_AUTHOR,
     role: 0,
     description: "Advanced real-time status card with detailed system info",
@@ -56,12 +56,13 @@ module.exports = {
             const memPercent = ((1 - os.freemem() / os.totalmem()) * 100).toFixed(1);
             const heapPercent = ((memory.heapUsed / memory.heapTotal) * 100).toFixed(1);
 
-            const platform = os.platform();
-            const arch = os.arch();
+            const platform = os.platform().toUpperCase();
+            const arch = os.arch().toUpperCase();
             const hostname = os.hostname();
             const nodeVersion = process.version;
             const pid = process.pid;
 
+            // Canvas Dimensions
             const width = 980;
             const height = 640;
             const canvas = createCanvas(width, height);
@@ -75,7 +76,7 @@ module.exports = {
             ctx.fillStyle = bg;
             ctx.fillRect(0, 0, width, height);
 
-            // Lights
+            // Light Effects
             const light1 = ctx.createRadialGradient(490, 0, 20, 490, 90, 480);
             light1.addColorStop(0, "rgba(139, 92, 246, 0.2)");
             light1.addColorStop(1, "rgba(139, 92, 246, 0)");
@@ -88,7 +89,7 @@ module.exports = {
             ctx.fillStyle = light2;
             ctx.fillRect(0, 0, width, height);
 
-            // Main Card
+            // Main Outer Card
             ctx.save();
             ctx.shadowColor = "rgba(139, 92, 246, 0.35)";
             ctx.shadowBlur = 30;
@@ -102,7 +103,7 @@ module.exports = {
             roundRect(ctx, 35, 35, 910, 570, 28);
             ctx.stroke();
 
-            // Header
+            // Header Banner
             const headerGrad = ctx.createLinearGradient(55, 55, 925, 55);
             headerGrad.addColorStop(0, "#7c3aed");
             headerGrad.addColorStop(1, "#06b6d4");
@@ -115,7 +116,7 @@ module.exports = {
             ctx.textAlign = "center";
             ctx.fillText("SIYAM-HASAN  •  BOT STATUS", 490, 98);
 
-            // Big Uptime
+            // Big Uptime Box
             ctx.fillStyle = "rgba(24, 24, 46, 0.95)";
             roundRect(ctx, 60, 145, 860, 90, 14);
             ctx.fill();
@@ -128,11 +129,11 @@ module.exports = {
 
             ctx.font = "bold 34px sans-serif";
             ctx.fillStyle = "#ffffff";
-            ctx.fillText(`${days}d${hours}h   ${minutes}m${seconds}s`, 490, 215);
+            ctx.fillText(`${days}d   ${hours}h   ${minutes}m   ${seconds}s`, 490, 215);
 
-            // 4 Info Boxes
+            // 4 Grid Info Boxes
             const boxes = [
-                { title: "PING", value: `${ping} ms`, x: 60, color: "#34d399" },
+                { title: "PING", value: `${ping} MS`, x: 60, color: "#34d399" },
                 { title: "PROCESS RAM", value: `${usedRAM} MB`, x: 280, color: "#fbbf24" },
                 { title: "CPU LOAD", value: cpuLoad, x: 500, color: "#22d3ee" },
                 { title: "CPU CORES", value: `${cpuCores}`, x: 720, color: "#a78bfa" }
@@ -150,7 +151,7 @@ module.exports = {
                 ctx.fillRect(box.x, y, 200, 4);
                 ctx.shadowBlur = 0;
 
-                ctx.font = "bold 13px sans-serif";
+                ctx.font = "bold 14px sans-serif";
                 ctx.fillStyle = "#a5b4fc";
                 ctx.textAlign = "center";
                 ctx.fillText(box.title, box.x + 100, y + 32);
@@ -160,7 +161,7 @@ module.exports = {
                 ctx.fillText(box.value, box.x + 100, y + 62);
             });
 
-            // Progress Bars Section
+            // RAM Usage Progress Bars
             ctx.fillStyle = "rgba(24, 24, 46, 0.95)";
             roundRect(ctx, 60, 360, 860, 100, 12);
             ctx.fill();
@@ -168,7 +169,7 @@ module.exports = {
             ctx.fillRect(60, 360, 860, 4);
 
             // Process RAM Bar
-            ctx.font = "bold 14px sans-serif";
+            ctx.font = "bold 15px sans-serif";
             ctx.fillStyle = "#a5b4fc";
             ctx.textAlign = "left";
             ctx.fillText(`Process RAM  ${heapPercent}%`, 85, 395);
@@ -177,7 +178,7 @@ module.exports = {
             roundRect(ctx, 85, 410, 380, 14, 7);
             ctx.fill();
             ctx.fillStyle = "#fbbf24";
-            roundRect(ctx, 85, 410, 380 * (heapPercent / 100), 14, 7);
+            roundRect(ctx, 85, 410, Math.min(380, 380 * (heapPercent / 100)), 14, 7);
             ctx.fill();
 
             // System RAM Bar
@@ -188,15 +189,15 @@ module.exports = {
             roundRect(ctx, 500, 410, 380, 14, 7);
             ctx.fill();
             ctx.fillStyle = "#22d3ee";
-            roundRect(ctx, 500, 410, 380 * (memPercent / 100), 14, 7);
+            roundRect(ctx, 500, 410, Math.min(380, 380 * (memPercent / 100)), 14, 7);
             ctx.fill();
 
-            ctx.font = "12px sans-serif";
+            ctx.font = "13px sans-serif";
             ctx.fillStyle = "#94a3b8";
-            ctx.fillText(`${usedRAM} /${totalHeap} MB`, 85, 445);
-            ctx.fillText(`${usedMemGB} /${totalMemGB} GB`, 500, 445);
+            ctx.fillText(`${usedRAM} / ${totalHeap} MB`, 85, 445);
+            ctx.fillText(`${usedMemGB} / ${totalMemGB} GB`, 500, 445);
 
-            // Bottom Details
+            // Bottom System Specs Section
             ctx.fillStyle = "rgba(24, 24, 46, 0.95)";
             roundRect(ctx, 60, 480, 860, 95, 12);
             ctx.fill();
@@ -217,22 +218,22 @@ module.exports = {
             ctx.font = "bold 14px sans-serif";
             ctx.fillStyle = "#ffffff";
             ctx.fillText(nodeVersion, 170, 515);
-            ctx.fillText(platform.toUpperCase(), 170, 550);
-            ctx.fillText(arch.toUpperCase(), 420, 515);
+            ctx.fillText(platform, 170, 550);
+            ctx.fillText(arch, 420, 515);
             ctx.fillText(hostname.substring(0, 14), 400, 550);
             ctx.fillText(String(pid), 620, 515);
             ctx.fillText("ONLINE", 640, 550);
 
-            // Footer
+            // Right Bottom Owner Stamp
             ctx.textAlign = "right";
-            ctx.font = "bold 14px sans-serif";
+            ctx.font = "bold 15px sans-serif";
             ctx.fillStyle = "#c4b5fd";
             ctx.fillText("NIJHUM CHATBOT", 890, 530);
             ctx.font = "12px sans-serif";
             ctx.fillStyle = "#7c3aed";
             ctx.fillText("Premium Real-time Card", 890, 555);
 
-            // Save & Send
+            // Generate Image Buffer & Save
             const cachePath = path.join(__dirname, "..", "cache");
             await fs.ensureDir(cachePath);
             const filePath = path.join(cachePath, `status_${Date.now()}.png`);
@@ -242,9 +243,28 @@ module.exports = {
                 await bot.deleteMessage(chatId, waitMsg.message_id);
             } catch (e) {}
 
+            // Dynamic Styled Telegram Message Caption
+            const captionText = 
+`╭❮ 𝗦𝗜𝗬𝗔𝗠•𝗕𝗢𝗧 𝗦𝗧𝗔𝗧𝗨𝗦 ❯╮
+┃
+┣ ⏱️ 𝗨𝗣𝗧𝗜𝗠𝗘: ${days}𝗗 ${hours}𝗛 ${minutes}𝗠 ${seconds}𝗦
+┣ ⚡ 𝗣𝗜𝗡𝗚: ${ping} 𝗠𝗦
+┣ 🧠 𝗣𝗥𝗢𝗖𝗘𝗦𝗦
+┣ 🎀 𝗥𝗔𝗠: ${usedRAM} / ${totalHeap} 𝗠𝗕
+┣ 💻 𝗖𝗣𝗨 𝗟𝗢𝗔𝗗: ${cpuLoad}
+┣ 🔐 (${cpuCores} 𝗖𝗢𝗥𝗘𝗦)
+┣ 📊 𝗦𝗬𝗦𝗧𝗘𝗠 𝗥𝗔𝗠:
+┣ 😘 ${usedMemGB} / ${totalMemGB} 𝗚𝗕
+┃
+┣ ⚙️ 𝗡𝗢𝗗𝗘.𝗝𝗦: ${nodeVersion}
+┣ 🖥️ 𝗣𝗟𝗔𝗧𝗙𝗢𝗥𝗠: ${platform} (${arch})
+┃
+┣ 👑 𝗢𝗪𝗡𝗘𝗥: 𝗦𝗜𝗬𝗔𝗠 𝗛𝗔𝗦𝗔𝗡
+┣ 🤖 𝗕𝗢𝗧: 𝗡𝗜𝗝𝗛𝗨𝗠 𝗖𝗛𝗔𝗧𝗕𝗢𝗧
+╰━═━═━═━═━═━═━═━═━╯`;
+
             await bot.sendPhoto(chatId, filePath, {
-                caption: `📊 **BOT STATUS CARD**\n🆔 Ping: \`${ping}ms\``,
-                parse_mode: "Markdown",
+                caption: captionText,
                 reply_to_message_id: messageId
             });
 
