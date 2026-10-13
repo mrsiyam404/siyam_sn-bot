@@ -58,15 +58,9 @@ function roundRect(ctx, x, y, w, h, r) {
     ctx.closePath();
 }
 
-// Telegram User Info helper
 async function getTelegramUser(bot, msg) {
     let targetID = msg.from.id;
-    let targetName = msg.from.first_name + (msg.from.last_name ? ` ${msg.from.last_name}` : "");
-    let avatarUrl = null;
-
-    if (msg.reply_to_message && msg.reply_to_message.from) {
-        targetID = msg.reply_to_message.from.id;
-        targetName = msg.reply_to_message.from.first_name + (msg.reply_to_message.from.last_name ? ` ${msg.reply_to_message.from.last_name}` : "");
+    let targetName = msg.from.first_name + (msg.from.last_name ? ` ${msg.from.last_name}` : ""); let avatarUrl = null;  if (msg.reply_to_message && msg.reply_to_message.from) { targetID = msg.reply_to_message.from.id; targetName = msg.reply_to_message.from.first_name + (msg.reply_to_message.from.last_name ? ` ${msg.reply_to_message.from.last_name}` : "");
     }
 
     try {
@@ -177,29 +171,30 @@ async function runDesign1(bot, msg) {
         const contentX = 330;
 
         ctx.save();
-        ctx.font = "bold 15px sans-serif";
+        // ফন্টের সাইজ বড় করা হয়েছে
+        ctx.font = "bold 18px sans-serif";
         ctx.fillStyle = "#8e9bbd";
         ctx.fillText("USER NAME", contentX, 85);
 
-        ctx.font = "bold 28px sans-serif";
-        ctx.fillStyle = "#ffffff";
-        ctx.fillText(cleanUserName, contentX, 122);
-
-        ctx.font = "bold 15px sans-serif";
-        ctx.fillStyle = "#8e9bbd";
-        ctx.fillText("TELEGRAM ID", contentX, 185);
-
         ctx.font = "bold 32px sans-serif";
-        ctx.fillStyle = "#00f5d4";
-        ctx.fillText(targetID, contentX, 225);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillText(cleanUserName, contentX, 125);
 
-        ctx.font = "bold 15px sans-serif";
+        ctx.font = "bold 18px sans-serif";
         ctx.fillStyle = "#8e9bbd";
-        ctx.fillText("SYSTEM OWNER", contentX, 290);
+        ctx.fillText("TELEGRAM ID", contentX, 190);
 
-        ctx.font = "bold 24px sans-serif";
+        ctx.font = "bold 36px sans-serif";
+        ctx.fillStyle = "#00f5d4";
+        ctx.fillText(targetID, contentX, 232);
+
+        ctx.font = "bold 18px sans-serif";
+        ctx.fillStyle = "#8e9bbd";
+        ctx.fillText("SYSTEM OWNER", contentX, 295);
+
+        ctx.font = "bold 28px sans-serif";
         ctx.fillStyle = "#ffee32";
-        ctx.fillText(ownerName, contentX, 328);
+        ctx.fillText(ownerName, contentX, 335);
         ctx.restore();
 
         const buffer = canvas.toBuffer("image/png");
@@ -220,7 +215,7 @@ async function runDesign1(bot, msg) {
         try {
             await bot.deleteMessage(chatId, waitMsg.message_id);
         } catch (e) {}
-        await bot.sendMessage(chatId, "❌ ইউআইডি কার্ড তৈری করতে সমস্যা হয়েছে!", { reply_to_message_id: msg.message_id });
+        await bot.sendMessage(chatId, "❌ ইউআইডি কার্ড তৈরিতে সমস্যা হয়েছে!", { reply_to_message_id: msg.message_id });
     } finally {
         setTimeout(() => {
             if (fs.existsSync(imgPath)) fs.unlinkSync(imgPath);
@@ -303,36 +298,37 @@ async function runDesign2(bot, msg) {
         roundRect(ctx, 290, 115, 480, 100, 16);
         ctx.fill();
 
-        ctx.font = "bold 15px Arial";
+        // ফন্টের সাইজ বড় করা হয়েছে
+        ctx.font = "bold 18px Arial";
         ctx.fillStyle = "#f9a8d4";
         ctx.textAlign = "left";
         ctx.fillText("USER NAME", 320, 150);
 
-        ctx.font = "bold 27px Arial";
+        ctx.font = "bold 30px Arial";
         ctx.fillStyle = "#ffffff";
-        const displayName = targetName.length > 22 ? targetName.slice(0, 22) + "..." : targetName;
-        ctx.fillText(displayName, 320, 190);
+        const displayName = targetName.length > 20 ? targetName.slice(0, 20) + "..." : targetName;
+        ctx.fillText(displayName, 320, 195);
 
         ctx.fillStyle = "rgba(45, 20, 50, 0.85)";
         roundRect(ctx, 290, 235, 480, 100, 16);
         ctx.fill();
 
-        ctx.font = "bold 15px Arial";
+        ctx.font = "bold 18px Arial";
         ctx.fillStyle = "#e9d5ff";
         ctx.fillText("USER ID", 320, 270);
 
-        ctx.font = "bold 26px Arial";
+        ctx.font = "bold 30px Arial";
         ctx.fillStyle = "#ffffff";
-        ctx.fillText(targetID, 320, 310);
+        ctx.fillText(targetID, 320, 315);
 
         ctx.fillStyle = "rgba(50, 20, 55, 0.9)";
         roundRect(ctx, 50, 360, 720, 70, 16);
         ctx.fill();
 
-        ctx.font = "bold 26px Arial";
+        ctx.font = "bold 28px Arial";
         ctx.fillStyle = "#ffffff";
         ctx.textAlign = "center";
-        ctx.fillText("Owner : Siyam Hasan", 410, 410);
+        ctx.fillText("Owner : Siyam Hasan", 410, 405);
 
         await fs.writeFile(filePath, canvas.toBuffer("image/png"));
 
@@ -358,7 +354,7 @@ module.exports = {
     config: {
         name: "uid",
         aliases: ["uid2", "ইউআইডি", "useid"],
-        version: "6.0",
+        version: "6.1",
         author: LOCKED_AUTHOR_1,
         role: 0,
         description: "Get user profile card with unique design",
