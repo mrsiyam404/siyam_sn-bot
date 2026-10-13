@@ -58,9 +58,21 @@ function roundRect(ctx, x, y, w, h, r) {
     ctx.closePath();
 }
 
+// Telegram User Info helper with real username & details
 async function getTelegramUser(bot, msg) {
     let targetID = msg.from.id;
-    let targetName = msg.from.first_name + (msg.from.last_name ? ` ${msg.from.last_name}` : ""); let avatarUrl = null;  if (msg.reply_to_message && msg.reply_to_message.from) { targetID = msg.reply_to_message.from.id; targetName = msg.reply_to_message.from.first_name + (msg.reply_to_message.from.last_name ? ` ${msg.reply_to_message.from.last_name}` : "");
+    let targetFirstName = msg.from.first_name || "";
+    let targetLastName = msg.from.last_name || "";
+    let targetName = (targetFirstName + (targetLastName ? ` ${targetLastName}` : "")).trim();
+    let targetUsername = msg.from.username ? `@${msg.from.username}` : "Not Available";
+    let avatarUrl = null;
+
+    if (msg.reply_to_message && msg.reply_to_message.from) {
+        targetID = msg.reply_to_message.from.id;
+        let rFirstName = msg.reply_to_message.from.first_name || "";
+        let rLastName = msg.reply_to_message.from.last_name || "";
+        targetName = (rFirstName + (rLastName ? ` ${rLastName}` : "")).trim();
+        targetUsername = msg.reply_to_message.from.username ? `@${msg.reply_to_message.from.username}` : "Not Available";
     }
 
     try {
@@ -74,7 +86,12 @@ async function getTelegramUser(bot, msg) {
         avatarUrl = null;
     }
 
-    return { targetID: String(targetID), targetName, avatarUrl };
+    return { 
+        targetID: String(targetID), 
+        targetName: targetName || "Telegram User", 
+        targetUsername, 
+        avatarUrl 
+    };
 }
 
 async function runDesign1(bot, msg) {
@@ -86,7 +103,7 @@ async function runDesign1(bot, msg) {
         fs.mkdirSync(cacheDir, { recursive: true });
     }
 
-    const { targetID, targetName, avatarUrl } = await getTelegramUser(bot, msg);
+    const { targetID, targetName, targetUsername, avatarUrl } = await getTelegramUser(bot, msg);
     const imgPath = path.join(cacheDir, `uid_${targetID}_${Date.now()}.png`);
 
     try {
@@ -171,7 +188,6 @@ async function runDesign1(bot, msg) {
         const contentX = 330;
 
         ctx.save();
-        // ফন্টের সাইজ বড় করা হয়েছে
         ctx.font = "bold 18px sans-serif";
         ctx.fillStyle = "#8e9bbd";
         ctx.fillText("USER NAME", contentX, 85);
@@ -204,10 +220,30 @@ async function runDesign1(bot, msg) {
             await bot.deleteMessage(chatId, waitMsg.message_id);
         } catch (e) {}
 
+        const captionText = 
+`╭━❮ 𝗜𝗡𝗙𝗢𝗥𝗠𝗔𝗧𝗜𝗢𝗡 ❯━╮
+┃
+┣ 👤 𝗡𝗔𝗠𝗘: ${targetName}
+┣ 🔗 𝗨𝗦𝗘𝗥𝗡𝗔𝗠𝗘: ${targetUsername}
+┣ 🆔 𝗨𝗦𝗘𝗥 𝗜𝗗: ${targetID}
+┃
+┣ 👑 𝗢𝗪𝗡𝗘𝗥: 𝗦𝗜𝗬𝗔𝗠 𝗛𝗔𝗦𝗔𝗡
+┣ 🤖 𝗡𝗜𝗝𝗛𝗨𝗠 𝗖𝗛𝗔𝗧𝗕𝗢𝗧
+╰━═━═━═━═━═━═━═━═━╯`;
+
+        // Inline keyboard button with bold text to copy UID
+        const inlineKeyboard = {
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: "📋 𝗖𝗢𝗣𝗬 𝗨𝗦𝗘𝗥 𝗜𝗗", callback_data: `copy_uid_${targetID}` }]
+                ]
+            }
+        };
+
         await bot.sendPhoto(chatId, imgPath, {
-            caption: `🆔 Telegram ID: \`${targetID}\``,
-            parse_mode: "Markdown",
-            reply_to_message_id: msg.message_id
+            caption: captionText,
+            reply_to_message_id: msg.message_id,
+            ...inlineKeyboard
         });
 
     } catch (err) {
@@ -225,7 +261,7 @@ async function runDesign1(bot, msg) {
 
 async function runDesign2(bot, msg) {
     const chatId = msg.chat.id;
-    const { targetID, targetName, avatarUrl } = await getTelegramUser(bot, msg);
+    const { targetID, targetName, targetUsername, avatarUrl } = await getTelegramUser(bot, msg);
 
     const cacheDir = path.join(__dirname, "..", "cache");
     if (!fs.existsSync(cacheDir)) fs.mkdirSync(cacheDir, { recursive: true });
@@ -298,7 +334,6 @@ async function runDesign2(bot, msg) {
         roundRect(ctx, 290, 115, 480, 100, 16);
         ctx.fill();
 
-        // ফন্টের সাইজ বড় করা হয়েছে
         ctx.font = "bold 18px Arial";
         ctx.fillStyle = "#f9a8d4";
         ctx.textAlign = "left";
@@ -332,10 +367,29 @@ async function runDesign2(bot, msg) {
 
         await fs.writeFile(filePath, canvas.toBuffer("image/png"));
 
+        const captionText = 
+`╭━❮ 𝗜𝗡𝗙𝗢𝗥𝗠𝗔𝗧𝗜𝗢𝗡 ❯━╮
+┃
+┣ 👤 𝗡𝗔𝗠𝗘: ${targetName}
+┣ 🔗 𝗨𝗦𝗘𝗥𝗡𝗔𝗠𝗘: ${targetUsername}
+┣ 🆔 𝗨𝗦𝗘𝗥 𝗜𝗗: ${targetID}
+┃
+┣ 👑 𝗢𝗪𝗡𝗘𝗥: 𝗦𝗜𝗬𝗔𝗠 𝗛𝗔𝗦𝗔𝗡
+┣ 🤖 𝗡𝗜𝗝𝗛𝗨𝗠 𝗖𝗛𝗔𝗧𝗕𝗢𝗧
+╰━═━═━═━═━═━═━═━═━╯`;
+
+        const inlineKeyboard = {
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: "📋 𝗖𝗢𝗣𝗬 𝗨𝗦𝗘𝗥 𝗜𝗗", callback_data: `copy_uid_${targetID}` }]
+                ]
+            }
+        };
+
         await bot.sendPhoto(chatId, filePath, {
-            caption: `🆔 Telegram ID: \`${targetID}\``,
-            parse_mode: "Markdown",
-            reply_to_message_id: msg.message_id
+            caption: captionText,
+            reply_to_message_id: msg.message_id,
+            ...inlineKeyboard
         });
 
         setTimeout(() => {
@@ -354,7 +408,7 @@ module.exports = {
     config: {
         name: "uid",
         aliases: ["uid2", "ইউআইডি", "useid"],
-        version: "6.1",
+        version: "7.0",
         author: LOCKED_AUTHOR_1,
         role: 0,
         description: "Get user profile card with unique design",
