@@ -114,43 +114,37 @@ async function createWelcomeCard(userImg, userName, threadName) {
     return canvas.toBuffer();
 }
 
-module.exports = {
-    config: {
-        name: "welcome",
-        version: "2.1",
-        author: "SIYAM-HASAN",
-        category: "events"
-    },
+module.exports = function (bot) {
+    bot.on('message', async (msg) => {
+        try {
+            if (!msg.new_chat_members || msg.new_chat_members.length === 0) return;
 
-    onTelegramEvent: async function (bot, msg) {
-        if (!msg.new_chat_members || msg.new_chat_members.length === 0) return;
+            const chatId = msg.chat.id;
+            const threadName = msg.chat.title || "Group";
 
-        const chatId = msg.chat.id;
-        const threadName = msg.chat.title || "Group";
+            for (const newMember of msg.new_chat_members) {
+                const userName = newMember.first_name + (newMember.last_name ? ` ${newMember.last_name}` : "");
+                const userId = newMember.id;
 
-        for (const newMember of msg.new_chat_members) {
-            const userName = newMember.first_name + (newMember.last_name ? ` ${newMember.last_name}` : "");
-            const userId = newMember.id;
+                let avatarUrl = "https://i.imgur.com/7Qk8k6c.png";
+                try {
+                    const photos = await bot.getUserProfilePhotos(userId, { limit: 1 });
+                    if (photos && photos.total_count > 0) {
+                        const fileId = photos.photos[0][0].file_id;
+                        const fileLink = await bot.getFileLink(fileId);
+                        avatarUrl = fileLink;
+                    }
+                } catch (e) {}
 
-            let avatarUrl = "https://i.imgur.com/7Qk8k6c.png";
-            try {
-                const photos = await bot.getUserProfilePhotos(userId, { limit: 1 });
-                if (photos && photos.total_count > 0) {
-                    const fileId = photos.photos[0][0].file_id;
-                    const fileLink = await bot.getFileLink(fileId);
-                    avatarUrl = fileLink;
-                }
-            } catch (e) {}
+                const cacheDir = path.join(__dirname, "..", "cache");
+                await fs.ensureDir(cacheDir);
+                const tempPath = path.join(cacheDir, `welcome_${userId}_${Date.now()}.png`);
 
-            const cacheDir = path.join(__dirname, "..", "cache");
-            await fs.ensureDir(cacheDir);
-            const tempPath = path.join(cacheDir, `welcome_${userId}_${Date.now()}.png`);
+                try {
+                    const imageBuffer = await createWelcomeCard(avatarUrl, userName, threadName);
+                    await fs.writeFile(tempPath, imageBuffer);
 
-            try {
-                const imageBuffer = await createWelcomeCard(avatarUrl, userName, threadName);
-                await fs.writeFile(tempPath, imageBuffer);
-
-                const captionText = 
+                    const captionText = 
 `🌸 𝐖𝐄𝐋𝐂𝐎𝐌𝐄 𝐓𝐎 𝐎𝐔𝐑 𝐆𝐑𝐎𝐔𝐏 🌸
 ━━━━━━━━━━━━━━━━━━━━
 🌷 𝐍𝐚𝐦𝐞: ${userName}
@@ -159,19 +153,22 @@ module.exports = {
 ━━━━━━━━━━━━━━━━━━━━
 𝐄𝐧𝐣𝐨𝐲 𝐲𝐨𝐮𝐫 𝐬𝐭𝐚𝐲! 😊`;
 
-                await bot.sendPhoto(chatId, tempPath, {
-                    caption: captionText,
-                    reply_to_message_id: msg.message_id
-                });
+                    await bot.sendPhoto(chatId, tempPath, {
+                        caption: captionText,
+                        reply_to_message_id: msg.message_id
+                    });
 
-            } catch (error) {
-                console.error("Telegram Welcome Error:", error);
-                await bot.sendMessage(chatId, `🌸 Welcome ${userName} to ${threadName}! Have fun! 😊`);
-            } finally {
-                setTimeout(() => {
-                    if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
-                }, 10000);
+                } catch (error) {
+                    console.error("Telegram Welcome Error:", error);
+                    await bot.sendMessage(chatId, `🌸 Welcome ${userName} to ${threadName}! Have fun! 😊`);
+                } finally {
+                    setTimeout(() => {
+                        if (fs.existsSync(tempPath)) fs.unlinkSync(tempPath);
+                    }, 10000);
+                }
             }
+        } catch (err) {
+            console.error("Welcome Event Error:", err.message);
         }
-    }
+    });
 };
