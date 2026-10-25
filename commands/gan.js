@@ -80,7 +80,7 @@ async function sendRandomSong(bot, chatId, messageId, isEdit = false) {
     const replyMarkup = {
       inline_keyboard: [
         [
-          { text: ""🎶𝐍𝐄𝐗𝐓", callback_data: "gan_next" }
+          { text: "🎶𝐍𝐄𝐗𝐓", callback_data: "gan_next" }
         ],
         [
           { text: "🤖 𝐀𝐃𝐃 𝐁𝐎𝐓", url: "https://t.me/siyam_nu_bot?startgroup=true" },
