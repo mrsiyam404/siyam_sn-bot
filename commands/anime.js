@@ -112,7 +112,7 @@ module.exports = {
               inline_keyboard: [
                 [
                   { text: "⏭️ 𝐍𝐄𝐗𝐓", callback_data: "anime_next" },
-                  { text: "🤖 𝐀𝐃𝐃 𝐁𝐎𝐓", url: "https://t.me/SiyamTgBot?startgroup=true" }
+                  { text: "🤖 𝐀𝐃𝐃 𝐁𝐎𝐓", url: "https://t.me/siyam_nu_bot?startgroup=true" }
                 ],
                 [
                   { text: "👑 𝐎𝐖𝐍𝐄𝐑", url: "https://t.me/ri_siyam" }
@@ -159,7 +159,7 @@ async function sendAnimeVideo(bot, chatId, messageId) {
           inline_keyboard: [
             [
               { text: "⏭️ 𝐍𝐄𝐗𝐓", callback_data: "anime_next" },
-              { text: "🤖 𝐀𝐃𝐃 𝐁𝐎𝐓", url: "https://t.me/SiyamTgBot?startgroup=true" }
+              { text: "🤖 𝐀𝐃𝐃 𝐁𝐎𝐓", url: "https://t.me/siyam_nu_bot?startgroup=true" }
             ],
             [
               { text: "👑 𝐎𝐖𝐍𝐄𝐑", url: "https://t.me/ri_siyam" }
