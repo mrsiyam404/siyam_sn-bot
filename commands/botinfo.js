@@ -36,7 +36,7 @@ module.exports = {
     const messageId = msg.message_id;
     const prefix = config.prefix || "/";
 
-    const BOT_USERNAME = "@siyam_nu_bot";
+    const BOT_USERNAME = "siyam_nu_bot";
     const OWNER_USERNAME = "ri_siyam";
     const ownerId = config.ownerID || "8442705758";
     const userRole = context?.role !== undefined ? context.role : 0;
