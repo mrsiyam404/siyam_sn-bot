@@ -5,7 +5,7 @@ const AUTHOR_LOCK = "🔰𝐗ʀᴀʜᴀᴛ-ᴅᴇᴠ🔰";
 
 module.exports = {
   config: {
-    name: "undress",
+    name: "re",
     version: "1.0",
     role: 2,
     author: AUTHOR_LOCK,
