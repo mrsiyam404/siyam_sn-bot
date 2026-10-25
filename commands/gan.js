@@ -39,10 +39,7 @@ const songLinks = [
 async function sendRandomSong(bot, chatId, messageId, isEdit = false) {
   if (songLinks.length === 0) {
     const msgText = "❌ Nᴏ sᴏɴɢs ᴄᴏᴜʟᴅ ʙᴇ ғᴏᴜɴᴅ!";
-    if (isEdit) {
-      return bot.sendMessage(chatId, msgText);
-    }
-    return bot.sendMessage(chatId, msgText, { reply_to_message_id: messageId });
+    return bot.sendMessage(chatId, msgText);
   }
 
   let index;
@@ -80,7 +77,7 @@ async function sendRandomSong(bot, chatId, messageId, isEdit = false) {
     const replyMarkup = {
       inline_keyboard: [
         [
-          { text: "🎶𝐍𝐄𝐗𝐓", callback_data: "gan_next" }
+          { text: "🎶 𝐍𝐄𝐗𝐓", callback_data: "gan_next" }
         ],
         [
           { text: "🤖 𝐀𝐃𝐃 𝐁𝐎𝐓", url: "https://t.me/siyam_nu_bot?startgroup=true" },
@@ -94,7 +91,6 @@ async function sendRandomSong(bot, chatId, messageId, isEdit = false) {
       fs.createReadStream(filePath),
       {
         caption: "🎶 Hᴇʀᴇ's ʏᴏᴜʀ sᴏɴɢ 🎧\n👑 𝐒𝐈𝐘𝐀𝐌-𝐇𝐀𝐒𝐀𝐍",
-        reply_to_message_id: isEdit ? undefined : messageId,
         reply_markup: replyMarkup
       }
     );
@@ -115,7 +111,7 @@ async function sendRandomSong(bot, chatId, messageId, isEdit = false) {
 module.exports = {
   config: {
     name: "gan",
-    version: "1.0.4",
+    version: "1.0.5",
     role: 0,
     author: AUTHOR_LOCK,
     shortDescription: "Play random song with command 🎶",
@@ -138,9 +134,10 @@ module.exports = {
   handleCallback: async function (bot, query) {
     if (query.data === "gan_next") {
       try {
-      
         await bot.answerCallbackQuery(query.id, { text: "🔄 𝗟𝗼𝗮𝗱𝗶𝗻𝗴 𝗻𝗲𝘅𝘁 𝗴𝗮𝗻..." });
-        await sendRandomSong(bot, query.message.chat.id, query.message.message_id, true);
+        const chatId = query.message.chat.id;
+        const messageId = query.message.message_id;
+        await sendRandomSong(bot, chatId, messageId, true);
       } catch (e) {
         console.error("Gan Callback Error:", e.message);
       }
