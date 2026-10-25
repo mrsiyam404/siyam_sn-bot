@@ -4,6 +4,7 @@ const MIDDLEWARE_URL = "https://xrahat-dev-undress.vercel.app/undress";
 const AUTHOR_LOCK = "🔰𝐗ʀᴀʜᴀᴛ-ᴅᴇᴠ🔰";
 
 module.exports = {
+  name: "undress",
   config: {
     name: "undress",
     version: "1.0",
@@ -14,8 +15,9 @@ module.exports = {
     category: "AI",
     guide: "undress"
   },
+  aliases: [],
 
-  onStart: async function ({ bot, msg, args }) {
+  execute: async function (bot, msg, args) {
     const chatId = msg.chat.id;
     const messageId = msg.message_id;
     const replyMessage = msg.reply_to_message;
@@ -24,10 +26,8 @@ module.exports = {
       return bot.sendMessage(chatId, "❌ Please reply to an image with /undress", { reply_to_message_id: messageId });
     }
 
-    
     let imageUrl = null;
     if (replyMessage.photo && replyMessage.photo.length > 0) {
-      
       const photo = replyMessage.photo[replyMessage.photo.length - 1];
       const fileLink = await bot.getFileLink(photo.file_id);
       imageUrl = fileLink;
@@ -61,7 +61,6 @@ module.exports = {
 
       const { resultUrl, captionTemplate } = data;
 
-    
       try {
         await bot.deleteMessage(chatId, waitMsg.message_id);
       } catch (e) {}
@@ -70,7 +69,7 @@ module.exports = {
         inline_keyboard: [
           [
             { text: "🤖 𝐀𝐃𝐃 𝐁𝐎𝐓", url: "https://t.me/siyam_nu_bot?startgroup=true" },
-            { text: "👑 𝐎𝐖𝐍𝐄𝐑", url: "https://t.me/ri_siyam" }
+            { text: "👑 𝐂𝐎𝐍𝐓𝐀𝐂𝐓 𝐎𝐖𝐍𝐄𝐑", url: "https://t.me/ri_siyam" }
           ]
         ]
       };
