@@ -4,7 +4,6 @@ const MIDDLEWARE_URL = "https://xrahat-dev-undress.vercel.app/undress";
 const AUTHOR_LOCK = "🔰𝐗ʀᴀʜᴀᴛ-ᴅᴇᴠ🔰";
 
 module.exports = {
-  name: "undress",
   config: {
     name: "undress",
     version: "1.0",
@@ -15,7 +14,6 @@ module.exports = {
     category: "AI",
     guide: "undress"
   },
-  aliases: [],
 
   execute: async function (bot, msg, args) {
     const chatId = msg.chat.id;
