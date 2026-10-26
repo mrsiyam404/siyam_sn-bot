@@ -5,6 +5,10 @@ module.exports = {
     prefix: '/',
     ownerID: '8442705758',
     
+    // নতুন যোগ করা হয়েছে (যাতে সব ফাইলে অটোমেটিক পায়)
+    ownerUsername: 'ri_siyam',       
+    botUsername: 'siyam_nu_bot',     
+
     adminIDs: [
         '7683797493',
         '8442705758'
@@ -20,3 +24,4 @@ module.exports = {
         ]
     }
 };
+    
