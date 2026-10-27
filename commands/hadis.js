@@ -30,7 +30,7 @@ module.exports = {
   config: {
     name: "hadis",
     aliases: ["hadith"],
-    version: "1.8",
+    version: "1.9",
     author: "𝐒𝐈𝐘𝐀𝐌-𝐇𝐀𝐒𝐀𝐍",
     role: 0,
     category: "islamic"
@@ -40,13 +40,18 @@ module.exports = {
     if (!checkAuthorLock(module.exports.config, bot, msg)) return;
 
     try {
-      const hadis = await getHadisText();
+      const responseData = await getHadisText();
+      const hadis = responseData.data || responseData;
+      
+      const hadisText = hadis.text || hadis.hadith || "হ হাদিস পাওয়া যায়নি।";
+      const hadisSource = hadis.source || hadis.book || "সংগৃহীত";
+
       const successMsg = 
 `» 👑 𝐒𝐈𝐘𝐀𝐌-𝐇𝐀𝐒𝐀𝐍 👑
 ───────────────
-📖 ${hadis.text}
+📖 ${hadisText}
 
-- ${hadis.source} 🖤
+- ${hadisSource} 🖤
 ───────────────
 » 🧚‍♀️ ‿𝗡𝗜𝗝𝗛𝗨𝗠 𝗖𝗛𝗔𝗧𝗕𝗢𝗧`;
 
@@ -55,10 +60,10 @@ module.exports = {
         reply_markup: {
           inline_keyboard: [
             [
-              { text: "⏭️ NEXT", callback_data: "next_hadis" },
+              { text: "⏭️ 𝐍𝐄𝐗𝐓", callback_data: "next_hadis" },
               { text: "🤖 𝐀𝐃𝐃 𝐁𝐎𝐓", url: `https://t.me/${config.botUsername}?startgroup=true` }
             ],
-            [{ text: "👑 𝐎𝐖𝐍𝐄𝐑", url: `https://t.me/${config.ownerUsername}` }]
+            [{ text: "👑 𝐂𝐎𝐍𝐓𝐀𝐂𝐓 𝐎𝐖𝐍𝐄𝐑", url: `https://t.me/${config.ownerUsername}` }]
           ]
         }
       });
@@ -72,20 +77,35 @@ module.exports = {
 ───────────────
 » 🧚‍♀️ ‿𝗡𝗜𝗝𝗛𝗨𝗠 𝗖𝗛𝗔𝗧𝗕𝗢𝗧`;
 
-      await bot.sendMessage(msg.chat.id, errorMsg, { reply_to_message_id: msg.message_id });
+      await bot.sendMessage(msg.chat.id, errorMsg, { 
+        reply_to_message_id: msg.message_id,
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: "🤖 𝐀𝐃𝐃 𝐁𝐎𝐓", url: `https://t.me/${config.botUsername}?startgroup=true` },
+              { text: "👑 𝐂𝐎𝐍𝐓𝐀𝐂𝐓 𝐎𝐖𝐍𝐄𝐑", url: `https://t.me/${config.ownerUsername}` }
+            ]
+          ]
+        }
+      });
     }
   },
 
   onCallbackQuery: async function (bot, query) {
     if (query.data === "next_hadis") {
       try {
-        const hadis = await getHadisText();
+        const responseData = await getHadisText();
+        const hadis = responseData.data || responseData;
+
+        const hadisText = hadis.text || hadis.hadith || "হাদিস পাওয়া যায়নি।";
+        const hadisSource = hadis.source || hadis.book || "সংগৃহীত";
+
         const newMsg = 
 `» 👑 𝐒𝐈𝐘𝐀𝐌-𝐇𝐀𝐒𝐀𝐍 👑
 ───────────────
-📖 ${hadis.text}
+📖 ${hadisText}
 
-- ${hadis.source} 🖤
+- ${hadisSource} 🖤
 ───────────────
 » 🧚‍♀️ ‿𝗡𝗜𝗝𝗛𝗨𝗠 𝗖𝗛𝗔𝗧𝗕𝗢𝗧`;
 
