@@ -6,7 +6,7 @@ const config = require("../config");
 
 module.exports = {
   config: {
-    name: "gay2",
+    name: "gay",
     version: "3.2",
     author: "𝐒𝐈𝐘𝐀𝐌-𝐇𝐀𝐒𝐀𝐍",
     role: 0,
