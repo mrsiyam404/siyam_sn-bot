@@ -71,7 +71,7 @@ const menuText = `╭───•𝗠𝗥 𝗝𝗨𝗪𝗘𝗟•───╮
 ━━━━━━━━━━━━━━━━━━━━━━━
 𝙰 𝙿 𝙸//𝙹𝚄𝚆𝙴𝙻
 ━━━━━━━━━━━━━━━
-╰──𝙼𝚁 𝙹𝚄𝚆𝙴𝙻 𝙿𝚁𝙾𝙹𝙴𝙲𝚃──╯
+╰──𝙼𝚁 𝙹𝚄𝗪𝙴𝙻 𝙿𝚁𝙾𝙹𝙴𝙲𝚃──╯
 
 Tell me how many video numbers you want to see by clicking the buttons below`;
 
@@ -89,16 +89,16 @@ module.exports = {
 
     const inlineKeyboard = {
       inline_keyboard: [
-        [ { text: "1. ISLAM", callback_data: "video_islam" }, { text: "2. ANIME", callback_data: "video_anime" } ],
-        [ { text: "3. SHAIRI", callback_data: "video_shairi" }, { text: "4. SHORT", callback_data: "video_short" } ],
-        [ { text: "5. SAD", callback_data: "video_sad" }, { text: "6. STATUS", callback_data: "video_status" } ],
-        [ { text: "7. FOOTBALL", callback_data: "video_football" }, { text: "8. FUNNY", callback_data: "video_funny" } ],
-        [ { text: "9. LOVE", callback_data: "video_love" }, { text: "10. CPL", callback_data: "video_cpl" } ],
-        [ { text: "11. BABY", callback_data: "video_baby" }, { text: "12. FREE FIRE", callback_data: "video_freefire" } ],
-        [ { text: "13. LOFI", callback_data: "video_lofi" }, { text: "14. HAPPY", callback_data: "video_happy" } ],
-        [ { text: "15. HUMAIYUN", callback_data: "video_humaiyun" }, { text: "16. SEX", callback_data: "video_sex" } ],
-        [ { text: "17. HORNY", callback_data: "video_horny" }, { text: "18. ITEM", callback_data: "video_item" } ],
-        [ { text: "19. HOT", callback_data: "video_hot" }, { text: "20. CAPCUT", callback_data: "video_capcut" } ]
+        [ { text: "🕌 1. ISLAM", callback_data: "video_islam" }, { text: "🎨 2. ANIME", callback_data: "video_anime" } ],
+        [ { text: "📜 3. SHAIRI", callback_data: "video_shairi" }, { text: "🎬 4. SHORT", callback_data: "video_short" } ],
+        [ { text: "😢 5. SAD", callback_data: "video_sad" }, { text: "📱 6. STATUS", callback_data: "video_status" } ],
+        [ { text: "⚽ 7. FOOTBALL", callback_data: "video_football" }, { text: "😂 8. FUNNY", callback_data: "video_funny" } ],
+        [ { text: "❤️ 9. LOVE", callback_data: "video_love" }, { text: "💑 10. CPL", callback_data: "video_cpl" } ],
+        [ { text: "👶 11. BABY", callback_data: "video_baby" }, { text: "🔥 12. FREE FIRE", callback_data: "video_freefire" } ],
+        [ { text: "🎧 13. LOFI", callback_data: "video_lofi" }, { text: "😊 14. HAPPY", callback_data: "video_happy" } ],
+        [ { text: "📚 15. HUMAIYUN", callback_data: "video_humaiyun" }, { text: "🔞 16. SEX", callback_data: "video_sex" } ],
+        [ { text: "🔥 17. HORNY", callback_data: "video_horny" }, { text: "⭐ 18. ITEM", callback_data: "video_item" } ],
+        [ { text: "🥵 19. HOT", callback_data: "video_hot" }, { text: "📼 20. CAPCUT", callback_data: "video_capcut" } ]
       ]
     };
 
@@ -113,8 +113,11 @@ module.exports = {
 
     if (!endpoints[data]) return;
 
+    let loadingMsg;
     try {
-      await bot.answerCallbackQuery(query.id, { text: "🔄 Loading video..." });
+      // বাটনে ক্লিক করার সাথে সাথে লোডিং মেসেজ পাঠানো
+      loadingMsg = await bot.sendMessage(chatId, "🔄 ভিডিও লোড হচ্ছে, একটু অপেক্ষা করুন...");
+      await bot.answerCallbackQuery(query.id, { text: "🔄 Fetching video..." });
 
       const githubRes = await axios.get('https://raw.githubusercontent.com/shaonproject/Shaon/main/api.json');
       const baseApi = githubRes.data.api;
@@ -127,12 +130,22 @@ module.exports = {
 
       const videoStreamResponse = await axios.get(videoDataUrl, { responseType: 'stream' });
 
+      // ভিডিও পাঠানো
       await bot.sendVideo(chatId, videoStreamResponse.data, {
-        caption: '🟡' + videoTitle + '\n𝚃𝙾𝚃𝙰𝙻 𝚅𝙸𝙳𝙴𝙾: ' + totalCount + '\n𝙰 𝙿 𝙸  𝗠𝗥 卝 𝗝𝚄𝚆𝙴𝗟🎀'
+        caption: '🟡' + videoTitle + '\n𝚃𝙾𝚃𝙰𝙻 𝚅𝙸𝙳𝙴𝙾: ' + totalCount + '\n𝙰 𝙿 𝙸  𝗠𝗥 卝 𝗝𝚄𝗪𝙴𝗟🎀'
       });
 
+      // ভিডিও সফলভাবে আসলে লোডিং মেসেজ ডিলিট করে দেওয়া
+      if (loadingMsg && loadingMsg.message_id) {
+        await bot.deleteMessage(chatId, loadingMsg.message_id).catch(() => {});
+      }
+
     } catch (error) {
-      await bot.sendMessage(chatId, "❌ ভিডিও আনতে সমস্যা হয়েছে!");
+      // কোনো সমস্যা হলে লোডিং মেসেজটি ডিলিট করে এরর মেসেজ দেখানো
+      if (loadingMsg && loadingMsg.message_id) {
+        await bot.deleteMessage(chatId, loadingMsg.message_id).catch(() => {});
+      }
+      await bot.sendMessage(chatId, "❌ ভিডিও আনতে সমস্যা হয়েছে অথবা এপিআই কাজ করছে না!");
     }
   }
 };
