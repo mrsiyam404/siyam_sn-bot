@@ -1,4 +1,6 @@
 
+"use strict";
+
 const TelegramBot = require("node-telegram-bot-api");
 const fs = require("fs");
 const path = require("path");
@@ -30,6 +32,17 @@ const bot = new TelegramBot(config.botToken, {
 bot.on("polling_error", error => {
     console.error("[Polling Error]:", error.message);
 });
+
+// ═══════════════════════════════════════════════
+// 👑 SIYAM HASAN TERMINAL DASHBOARD
+// Terminal only — no Telegram message
+// ═══════════════════════════════════════════════
+
+try {
+    require("./startup/siyamDashboard")(bot);
+} catch (error) {
+    console.error("[DASHBOARD LOAD ERROR]:", error.stack || error.message);
+}
 
 const commands = new Map();
 const aliases = new Map();
